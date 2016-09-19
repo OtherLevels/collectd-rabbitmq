@@ -293,9 +293,9 @@ class CollectdPlugin(object):
         collectd.debug("Dispatching %s values: %s" % (path, values))
 
         metric = collectd.Values()
-        metric.host = host
+        metric.host = CONFIG.connection.host
 
-        metric.plugin = plugin
+        metric.plugin = "rabbitmq_%s" % plugin
 
         if plugin_instance:
             metric.plugin_instance = plugin_instance
