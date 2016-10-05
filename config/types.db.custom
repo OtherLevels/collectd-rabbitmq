@@ -53,3 +53,4 @@ return                  value:GAUGE:0:U
 messages                value:GAUGE:0:U
 messages_ready          value:GAUGE:0:U
 messages_unacknowledged value:GAUGE:0:U
+consumers               value:GAUGE:0:U
