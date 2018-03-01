@@ -113,7 +113,8 @@ class TestBaseClass(unittest.TestCase):
     def setUp(self):
         self.conn = ConnectionInfo(host="example.com",
                                    port=15672,
-                                   scheme="http")
+                                   scheme="http",
+                                   validate_certs=False)
         self.auth = Auth()
         self.conf = Config(self.auth, self.conn)
         self.stats = RabbitMQStats(self.conf)
@@ -194,6 +195,42 @@ class TestGetStats(TestBaseClass):
         """
         self.assertRaises(ValueError, self.stats.get_stats,
                           'cheese', 'test', 'test_vhost')
+
+
+class TestOverViewStats(TestStatsBaseClass):
+    """
+    Test the overview stats.
+    """
+    def setUp(self):
+        TestStatsBaseClass.setUp(self)
+        self.test_overview_stats = json.dumps(dict(
+            cluster_name='test_cluster',
+            erlang_full_version='test_erlang_version',
+            exchange_types=[],
+            listeners='',
+            management_version='test_management_version',
+            message_stats=[],
+            node='test_node_name',
+            object_totals='test_object_totals',
+            queue_totals='test_queue_totals',
+            rabbitmq_version='test_rabbitmq_version',
+            statistics_db_node='test_stats_db_node',
+            statistics_level=''
+        ))
+
+    @patch('collectd_rabbitmq.rabbit.urllib2.urlopen')
+    def test_get_overview_stats(self, mock_urlopen):
+
+        """
+        Asserts that overview returns proper stats.
+
+        Args:
+        :param mock_urlopen: A patched urllib object
+        """
+        mock_response = MockURLResponse(self.test_overview_stats)
+        mock_urlopen.return_value = mock_response
+        stats = self.stats.get_overview_stats()
+        self.assertTrue(stats)
 
 
 class TestExchanges(TestStatsBaseClass):
@@ -409,6 +446,7 @@ class TestIgnoredExchanges(TestStatsBaseClass):
         mock_urlopen.side_effect = create_mock_url_repsonse
         queues = self.stats.get_queues("test_vhost")
         self.assertIsNotNone(queues)
+
 
 if __name__ == '__main__':
 
