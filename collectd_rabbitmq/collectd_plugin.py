@@ -312,7 +312,7 @@ class CollectdPlugin(object):
             metric = collectd.Values()
             metric.host = CONFIG.connection.host
 
-            metric.plugin = "rabbitmq_%s" %plugin
+            metric.plugin = "rabbitmq_%s" % plugin
 
             if plugin_instance:
                 metric.plugin_instance = plugin_instance
